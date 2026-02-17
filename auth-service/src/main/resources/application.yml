@@ -5,6 +5,20 @@ spring:
   application:
     name: auth-service
 
+  datasource:
+    url: jdbc:postgresql://localhost:5432/auth_db
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
 springdoc:
   api-docs:
     enabled: true
@@ -14,3 +28,13 @@ springdoc:
 logging:
   level:
     org.springframework.security: INFO
+
+user-service:
+  base-url: http://localhost:9090
+
+jwt:
+  issuer: "ecommerce-auth"
+  # DEV ONLY. Must be LONG (>= 32 bytes). Replace in prod with secret manager.
+  secret: "DEV_ONLY_CHANGE_ME__super_long_secret_key_at_least_64_chars_1234567890_abcdefghijklmnopqrstuvwxyz"
+  access-token-minutes: 15
+  refresh-token-days: 7
