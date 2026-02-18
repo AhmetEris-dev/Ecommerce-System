@@ -4,25 +4,43 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
+group = 'com.ahmete'
+version = '0.0.1-SNAPSHOT'
+description = 'user-service'
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     runtimeOnly 'org.postgresql:postgresql'
+
+    // Swagger / OpenAPI (Spring Boot 4 + Jackson 3 defaults can break springdoc; we pin Jackson 2 line to keep Swagger working reliably)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
+    implementation platform('com.fasterxml.jackson:jackson-bom:2.17.2')
+
+    // JWT parsing/verifying (HS256)
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }

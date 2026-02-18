@@ -17,3 +17,13 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+jwt:
+  issuer: "ecommerce-auth"
+  secret: "SAME_DEV_SECRET_AS_AUTH_SERVICE_CHANGE_ME_32_BYTES_MIN"
