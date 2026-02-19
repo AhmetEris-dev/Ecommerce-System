@@ -7,7 +7,30 @@ spring:
 
   cloud:
     gateway:
+      # DEV CORS (React dev servers)
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173,http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
       routes:
+        # BLOCK internal endpoints from outside
+        - id: block-internal
+          uri: no://op
+          predicates:
+            - Path=/internal/**
+          filters:
+            - SetStatus=403
+
         - id: user-service
           uri: http://localhost:9090
           predicates:
