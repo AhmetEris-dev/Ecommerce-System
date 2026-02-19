@@ -9,6 +9,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/order_db
     username: postgres
     password: root
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -17,3 +18,20 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+logging:
+  level:
+    org.springframework.security: INFO
+
+product-service:
+  base-url: http://localhost:9091
+
+jwt:
+  issuer: "ecommerce-auth"
+  secret: "DEV_ONLY_CHANGE_ME__super_long_secret_key_at_least_64_chars_1234567890_abcdefghijklmnopqrstuvwxyz"
