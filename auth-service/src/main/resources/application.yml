@@ -1,6 +1,27 @@
+server:
+  port: ${AUTH_SERVICE_PORT:9093}
+
 spring:
   application:
     name: auth-service
+
+  datasource:
+    url: ${AUTH_DB_URL:jdbc:postgresql://localhost:5432/auth_db}
+    username: ${AUTH_DB_USERNAME:postgres}
+    password: ${AUTH_DB_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: false
 
 springdoc:
   api-docs:
@@ -20,3 +41,6 @@ management:
 
 jwt:
   issuer: ${JWT_ISSUER:ecommerce-auth}
+  secret: ${JWT_SECRET:my-super-secret-key-that-is-at-least-32-bytes}
+  access-token-minutes: ${JWT_ACCESS_TOKEN_MINUTES:15}
+  refresh-token-days: ${JWT_REFRESH_TOKEN_DAYS:7}
