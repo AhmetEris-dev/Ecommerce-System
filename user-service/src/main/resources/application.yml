@@ -1,22 +1,6 @@
-server:
-  port: 9090
-
 spring:
   application:
     name: user-service
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/user_db
-    username: postgres
-    password: root
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
 
 springdoc:
   api-docs:
@@ -25,5 +9,14 @@ springdoc:
     enabled: true
 
 jwt:
-  issuer: "ecommerce-auth"
-  secret: "SAME_DEV_SECRET_AS_AUTH_SERVICE_CHANGE_ME_32_BYTES_MIN"
+  issuer: ${JWT_ISSUER:ecommerce-auth}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true

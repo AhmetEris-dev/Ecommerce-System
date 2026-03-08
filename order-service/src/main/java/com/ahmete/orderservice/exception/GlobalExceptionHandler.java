@@ -34,6 +34,11 @@ public class GlobalExceptionHandler {
 		return build(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
 	}
 	
+	@ExceptionHandler(ServiceUnavailableException.class)
+	public ResponseEntity<ApiError> handleServiceUnavailable(ServiceUnavailableException ex, HttpServletRequest req) {
+		return build(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), req.getRequestURI());
+	}
+	
 	@ExceptionHandler(BadRequestException.class)
 	public ResponseEntity<ApiError> handleBadRequest(BadRequestException ex, HttpServletRequest req) {
 		return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI());

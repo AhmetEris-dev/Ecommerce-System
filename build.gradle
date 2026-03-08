@@ -1,7 +1,3 @@
-plugins {
-    id "base"
-}
-
 allprojects {
     group = "com.ahmete"
     version = "0.0.1-SNAPSHOT"

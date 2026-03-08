@@ -48,7 +48,7 @@ public class AuthService {
 		}
 		
 		var access = jwtService.createAccessToken(verified.userId(), verified.role(), verified.companyId());
-		var refresh = refreshTokenService.createAndPersist(verified.userId(), ip, userAgent);
+		var refresh = refreshTokenService.createAndPersist(verified.userId(), verified.role(), verified.companyId(), ip, userAgent);
 		
 		return new TokenResponse(
 				access.token(),
@@ -81,38 +81,31 @@ public class AuthService {
 		// 1) revoke current token
 		current.setRevokedAt(now);
 		
-		// 2) create new token row
-		var created = refreshTokenService.createAndPersist(current.getUserId(), ip, userAgent);
+		// ensure we have claims to mint a new access token
+		String role = current.getRole();
+		Long companyId = current.getCompanyId();
+		if (role == null) {
+			// Backward-compat for old tokens without embedded claims: force re-login.
+			throw new ApiException(HttpStatus.UNAUTHORIZED, "Refresh token missing claims. Please login again.");
+		}
+		
+		// 2) create new token row (rotation) with same claims
+		var created = refreshTokenService.createAndPersist(current.getUserId(), role, companyId, ip, userAgent);
 		
 		// 3) link old -> new
 		current.setReplacedByTokenId(created.entity().getId());
 		
 		refreshTokenRepository.save(current);
 		
-		// Access token claims come from user-service originally, but refresh endpoint does NOT call user-service.
-		// We must embed role/companyId in refresh table to restore claims OR keep it minimal.
-		// Your requirement says access token must contain role & companyId.
-		// So we MUST fetch them. Pragmatic choice: call user-service to read current role/companyId/status.
-		// BUT you did not provide an endpoint. Therefore:
-		// We'll keep role/companyId in JWT only at login/refresh by requiring client to re-login if claims changed.
-		// To satisfy your claim requirement NOW, we store them as part of refresh flow is impossible without data.
-		// So: we will encode role/companyId from the *latest access token*? Not available here.
-		//
-		// Solution that DOES satisfy requirements without new endpoints:
-		// - Store role/companyId in refresh_tokens table (extra columns).
-		// You explicitly said "title/fields exactly", no extras. So we won't.
-		//
-		// Therefore we do the only correct thing given constraints:
-		// throw 500 if role/companyId cannot be determined.
-		//
-		// ----
-		// If you want refresh to mint access tokens with role/companyId, you MUST either:
-		// (A) add role/companyId to RefreshToken entity (recommended), OR
-		// (B) add user-service internal endpoint to fetch auth claims by userId.
-		//
-		// I'm not going to silently violate your constraints by adding columns.
-		throw new ApiException(HttpStatus.NOT_IMPLEMENTED,
-		                       "Refresh cannot mint access token with role/companyId without an internal user-service claims endpoint or storing claims in refresh_tokens");
+		// mint new access token based on stored claims
+		var access = jwtService.createAccessToken(current.getUserId(), role, companyId);
+		
+		return new TokenResponse(
+				access.token(),
+				created.rawToken(),
+				"Bearer",
+				access.expiresAt()
+		);
 	}
 	
 	@Transactional

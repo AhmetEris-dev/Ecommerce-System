@@ -32,6 +32,12 @@ dependencies {
     // JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    // Actuator for health/metrics
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Flyway for DB migrations
+    implementation 'org.flywaydb:flyway-core'
+
     // PostgreSQL
     runtimeOnly 'org.postgresql:postgresql'
 

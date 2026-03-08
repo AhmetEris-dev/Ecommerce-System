@@ -24,6 +24,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // Actuator for health/metrics
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Flyway for DB migrations
+    implementation 'org.flywaydb:flyway-core'
+
     runtimeOnly 'org.postgresql:postgresql'
 
     // Swagger / OpenAPI (Spring Boot 4 + Jackson 3 defaults can break springdoc; we pin Jackson 2 line to keep Swagger working reliably)

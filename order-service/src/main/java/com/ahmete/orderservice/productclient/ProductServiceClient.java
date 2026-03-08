@@ -3,9 +3,9 @@ package com.ahmete.orderservice.productclient;
 import com.ahmete.orderservice.exception.ForbiddenException;
 import com.ahmete.orderservice.exception.InsufficientStockException;
 import com.ahmete.orderservice.exception.NotFoundException;
-import com.ahmete.orderservice.productclient.dto.DecreaseStockRequest;
 import com.ahmete.orderservice.productclient.dto.ProductDetailsResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.RestClientException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -30,16 +30,19 @@ public class ProductServiceClient {
 				throw new NotFoundException("Product not found: " + id);
 			}
 			throw e;
+		} catch (RestClientException e) {
+			// Wrap generic client exceptions into domain-friendly error
+			throw new com.ahmete.orderservice.exception.ServiceUnavailableException("product-service is unavailable");
 		}
 	}
 	
 	public void decreaseStock(Long productId, int quantity) {
-		DecreaseStockRequest req = new DecreaseStockRequest(quantity);
-		
 		try {
 			restClient.post()
-			          .uri("/internal/products/{id}/decrease-stock", productId)
-			          .body(req)
+			          .uri(uriBuilder -> uriBuilder
+					          .path("/internal/products/{id}/decrease-stock")
+					          .queryParam("quantity", quantity)
+					          .build(productId))
 			          .retrieve()
 			          .toBodilessEntity();
 		} catch (HttpClientErrorException e) {
@@ -53,6 +56,8 @@ public class ProductServiceClient {
 				throw new ForbiddenException("Product not ACTIVE: productId=" + productId);
 			}
 			throw e;
+		} catch (RestClientException e) {
+			throw new com.ahmete.orderservice.exception.ServiceUnavailableException("product-service is unavailable");
 		}
 	}
 }

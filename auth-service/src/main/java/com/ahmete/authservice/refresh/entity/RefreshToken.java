@@ -24,6 +24,12 @@ public class RefreshToken {
 	@Column(name = "user_id", nullable = false)
 	private Long userId;
 	
+	@Column(name = "role", length = 64)
+	private String role;
+	
+	@Column(name = "company_id")
+	private Long companyId;
+	
 	@Column(name = "token_hash", nullable = false, updatable = false, length = 64)
 	private String tokenHash;
 	
@@ -68,6 +74,22 @@ public class RefreshToken {
 	
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+	
+	public String getRole() {
+		return role;
+	}
+	
+	public void setRole(String role) {
+		this.role = role;
+	}
+	
+	public Long getCompanyId() {
+		return companyId;
+	}
+	
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
 	}
 	
 	public String getTokenHash() {

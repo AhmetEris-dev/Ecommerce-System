@@ -46,7 +46,7 @@ public class RefreshTokenService {
 	}
 	
 	@Transactional
-	public CreatedRefreshToken createAndPersist(Long userId, String createdByIp, String userAgent) {
+	public CreatedRefreshToken createAndPersist(Long userId, String role, Long companyId, String createdByIp, String userAgent) {
 		Instant now = Instant.now();
 		Instant exp = now.plus(jwtProperties.refreshTokenDays(), ChronoUnit.DAYS);
 		
@@ -55,6 +55,8 @@ public class RefreshTokenService {
 		
 		RefreshToken rt = new RefreshToken();
 		rt.setUserId(userId);
+		rt.setRole(role);
+		rt.setCompanyId(companyId);
 		rt.setTokenHash(hash);
 		rt.setExpiresAt(exp);
 		rt.setCreatedAt(now);
